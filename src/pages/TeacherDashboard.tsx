@@ -1018,11 +1018,11 @@ export default function TeacherDashboard() {
                       Bản Thân (Admin - {user.name})
                     </option>
                   )}
-                  {dbUsers.filter(u => !u.isAnonymous && !(u.email || "").includes("anonymous@local")).map(u => {
+                  {dbUsers.filter(u => !u.isAnonymous && !(u.email || "").includes("anonymous@local") && u.name && u.name.trim() !== "").map(u => {
                     if (user && u.id === user.id) return null;
                     return (
                       <option key={u.id} value={u.id}>
-                        {u.name} (LV: {u.level || 1} | {u.points || 0} PTS)
+                        {u.name} {u.email ? `(${u.email}) ` : ""}(LV: {u.level || 1} | {u.points || 0} PTS)
                       </option>
                     );
                   })}

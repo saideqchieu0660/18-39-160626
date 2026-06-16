@@ -45,32 +45,46 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       setShowExportMenu(false);
       
       const { jsPDF } = await import('jspdf');
-      const { toPng } = await import('html-to-image');
+      const html2canvas = (await import('html2canvas')).default;
       
+      // Đợi font loading và render
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       // Temporarily bring the element to viewport but behind everything to ensure browser renders it properly
       const originalTop = targetRef.style.top;
       const originalLeft = targetRef.style.left;
       const originalZIndex = targetRef.style.zIndex;
       const originalPosition = targetRef.style.position;
+      const originalOpacity = targetRef.style.opacity;
+      const originalDisplay = targetRef.style.display;
+      const originalPointerEvents = targetRef.style.pointerEvents;
       
-      targetRef.style.position = 'fixed';
-      targetRef.style.top = '0';
-      targetRef.style.left = '0';
-      targetRef.style.zIndex = '-1000'; // Đưa ra sau cùng
-      
-      // Đợi DOM cập nhật và render (quan trọng để font được load)
-      await new Promise(resolve => setTimeout(resolve, 300));
+      targetRef.style.position = 'absolute';
+      targetRef.style.top = '0px';
+      targetRef.style.left = '0px';
+      targetRef.style.zIndex = '-9999';
+      targetRef.style.opacity = '1';
+      targetRef.style.display = 'flex';
+      targetRef.style.pointerEvents = 'none';
 
-      // Warm up call để tải các font chữ vào cache ẩn của trình duyệt nếu là mobile
-      try { await toPng(targetRef, { cacheBust: false, pixelRatio: 1 }); } catch (e) {}
+      // Force browser to recalculate layout
+      targetRef.getBoundingClientRect();
+      await new Promise(resolve => setTimeout(resolve, 150));
 
-      const imgData = await toPng(targetRef, {
-        cacheBust: false,
+      const canvas = await html2canvas(targetRef, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
         backgroundColor: '#09090b', // bg-zinc-950
-        pixelRatio: 2,
-        style: {
-          transform: 'scale(1)',
-          transformOrigin: 'top left'
+        logging: false,
+        onclone: (clonedDoc) => {
+          // If any cloned elements need adjustments to ensure they are visible
+          const clonedEl = clonedDoc.getElementById(targetRef.id);
+          if (clonedEl) {
+             clonedEl.style.position = 'relative';
+             clonedEl.style.top = '0';
+             clonedEl.style.left = '0';
+          }
         }
       });
 
@@ -79,6 +93,11 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       targetRef.style.top = originalTop;
       targetRef.style.left = originalLeft;
       targetRef.style.zIndex = originalZIndex;
+      targetRef.style.opacity = originalOpacity;
+      targetRef.style.display = originalDisplay;
+      targetRef.style.pointerEvents = originalPointerEvents;
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
 
       let pdfWidth = 800;
       let pdfHeight = mode === 'single' ? 500 : targetRef.offsetHeight;

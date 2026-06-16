@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils.js';
 import { triggerCelebration } from '../lib/celebration.js';
 import { store } from '../lib/store';
-import { toPng } from 'html-to-image';
 
 const BADGES = [
   // 1. CHUỖI KHỔ TU (STREAK - Đăng nhập liên tiếp)

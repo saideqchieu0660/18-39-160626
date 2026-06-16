@@ -5,9 +5,11 @@ import App from './App.tsx';
 import './index.css';
 import { SoundProvider } from './components/SoundProvider';
 import { unregisterServiceWorker } from './lib/serviceWorkerRegistration';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Defensive Canvas polyfill to prevent "canvas.getBoundingClientRect is not a function" crashes
 try {
+
   if (typeof window !== "undefined") {
     // 1. Regular Canvas
     if (typeof HTMLCanvasElement !== "undefined" && !HTMLCanvasElement.prototype.getBoundingClientRect) {
@@ -78,9 +80,11 @@ window.addEventListener("unhandledrejection", (e) => {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <SoundProvider>
-        <App />
-      </SoundProvider>
+      <ErrorBoundary>
+        <SoundProvider>
+          <App />
+        </SoundProvider>
+      </ErrorBoundary>
     </BrowserRouter>
   </StrictMode>,
 );

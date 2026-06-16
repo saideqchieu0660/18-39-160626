@@ -1896,20 +1896,20 @@ KHÔNG sử dụng Markdown code block. TRẢ VỀ ĐÚNG MỘT OBJECT JSON DUY 
           responseStyle = "debate";
           responseMode = "direct"; 
       }
-      if (responseStyle === "super_detailed") {
-          responseStyle = "detailed";
-      }
 
       const isConciseMode = req.body.isConciseMode || responseStyle === "concise";
 
       let styleGuidance = "";
-      if (responseStyle === "detailed") {
+      if (responseStyle === "super_detailed") {
+        styleGuidance = `\nPHONG CÁCH TRẢ LỜI - SIÊU CHI TIẾT (SUPER DETAILED MODE - NGHIÊN CỨU SÂU):
+- BẮT BUỘC TỐI CAO: Viết như một bài luận nghiên cứu khoa học chuyên sâu, phân tích cặn kẽ mọi góc độ, ngóc ngách của vấn đề (từ nguồn gốc lịch sử, bản chất học thuật, phân tích cấu trúc, mở rộng liên hệ, đến các ví dụ phức tạp). Sử dụng headings, bullet points một cách chuyên nghiệp.
+- BẮT BUỘC TỐI CAO: Chiều dài cực lớn, khối lượng thông tin khổng lồ và dồi dào. Không giới hạn số chữ nhưng phải đảm bảo bao quát 100% bản chất, tối thiểu 3-5 đoạn văn lớn dài.
+- BẮT BUỘC TỐI CAO: Bổ sung định lý nâng cao, công thức (nếu có), trích dẫn hoặc nguyên lý mở rộng liên quan để bài nghiên cứu thêm uyên bác. TUYỆT ĐỐI KHÔNG trả lời hời hợt!`;
+      } else if (responseStyle === "detailed") {
         styleGuidance = `\nPHONG CÁCH TRẢ LỜI - GIẢI THÍCH CHI TIẾT (DETAILED MODE):
-- BẮT BUỘC TỐI CAO: Tập trung phân tích chuyên sâu toàn bộ bản chất khoa học và nguồn gốc vấn đề từ cốt lõi, thấu suốt gốc rễ vấn đề. Phân chia nhỏ các khía cạnh bằng các đề mục lớn (như H3/H4), sử dụng bullet points rõ ràng và có tính thẩm mỹ cao.
-- BẮT BUỘC TỐI CAO: Trả lời cực kỳ dài dặn, đầy đủ chi tiết, dồi dào chữ nghĩa, cặn kẽ và phong phú (bắt buộc độ dài từ 3-5 đoạn văn chi tiết và tối thiểu phải có 350 từ). Tuyệt đối cấm trả lời lướt qua sơ sài!
-- BẮT BUỘC TỐI CAO: Phải chủ động đưa trực tiếp tất cả các thuật ngữ cốt lõi, khái niệm học thuật, công thức toán lý hóa hoặc đoạn code thực chiến có liên quan cùng định lý đầy đủ. KHÔNG GIẤU GIẾM kiến thức.
-- BẮT BUỘC TỐI CAO: Cung cấp ít nhất 1-2 ví dụ minh họa thực tế sinh động, cụ thể để người học dễ dàng hình dung lý thuyết áp dụng như thế nào.
-- BẮT BUỘC TỐI CAO: Tuyệt đối bỏ qua hoàn toàn tất cả các yêu cầu viết ngắn gọn, rút gọn! Tuyệt đối không trả lời lướt qua sơ sài hay để đáp án cụp ngủn chỉ có vài từ hoặc vài câu ngắn!`;
+- BẮT BUỘC TỐI CAO: Tập trung phân tích chuyên sâu bản chất sự việc. Giải thích rõ ràng khoảng 300 từ (khoảng 2-3 đoạn văn).
+- BẮT BUỘC TỐI CAO: Phải chủ động đưa trực tiếp tất cả các thuật ngữ cốt lõi, công thức, khái niệm cơ bản.
+- BẮT BUỘC TỐI CAO: Luôn phải có 1-2 ví dụ minh họa thực tế sinh động. Đoạn giải thích phải gọn gàng, súc tích nhưng đầy đủ chiều sâu (không viết lê thê kiểu bài luận 1000 chữ, chỉ khoảng 300 chữ là đủ điểm).`;
       } else if (responseStyle === "debate") {
         styleGuidance = `\nPHONG CÁCH TRẢ LỜI - TRANH BIỆN (DEBATE MODE):
 - Đóng vai là đối thủ tranh luận gắt gao, hiếu chiến và cực kỳ sắc bén (Devil's Advocate).
@@ -1952,25 +1952,35 @@ ${responseStyle === "debate"
 ${styleGuidance}
 ${conciseModeGuidance}`;
       } else {
-        const socraticRule = responseStyle === "detailed"
-          ? `2. PHONG CÁCH SOCRATIC TRONG CHẾ ĐỘ CHI TIẾT (ĐẶC BIỆT CHUYÊN SÂU):
-- Tao BẮT BUỘC phải xông thẳng vào giải thích giải nghĩa cực kỳ tường tận, sâu sắc, cặn kẽ và hào phóng mặt thông tin (cung cấp toàn bộ khái niệm, bản chất khoa học học thuật, nguyên lý, mã trực quan, lời giải hoàn chỉnh) ở phần thân bài. TUYỆT ĐỐI KHÔNG BỎ QUA LÝ THUYẾT NỀN TẢNG. Cấm bắt chước lỗi trả lời ngắn của bản thân trong quá khứ!
-- Sau khi đã cung cấp khối lượng kiến thức đồ sộ cặn kẽ (thân bài chiếm 95% cuộc đối thoại), tao MỚI ĐƯỢC PHÉP đặt thêm duy nhất một câu hỏi gợi mở vận dụng/nâng cao ở dòng cuối cùng của câu trả lời để kiểm tra ngộ tính của người dùng.`
-          : `2. PHƯƠNG PHÁP SOCRATIC (GỢI MỞ KÍCH THÍCH TƯ DUY):
+        let socraticRule = "";
+        
+        if (responseStyle === "super_detailed") {
+          socraticRule = `2. PHONG CÁCH SOCRATIC TRONG CHẾ ĐỘ SIÊU CHI TIẾT (NGHIÊN CỨU SÂU):
+- Tao BẮT BUỘC phải xông thẳng vào giải nghĩa cực kỳ tường tận, sâu sắc, cạn kiệt toàn bộ mọi góc cạnh tri thức, cung cấp lượng kiến thức khổng lồ (thân bài phân tích chi tiết, mở rộng đa chiều, tối thiểu 3-5 đoạn lớn). Tuyệt đối không lặp lại form quá khứ!
+- Sau khi trình bày xong toàn bài nghiên cứu khổng lồ ở thân bài, tao MỚI ĐƯỢC PHÉP hỏi thêm một câu mở rộng đỉnh cao cuối cùng để kiểm tra ngộ tính của người dùng.`;
+        } else if (responseStyle === "detailed") {
+          socraticRule = `2. PHONG CÁCH SOCRATIC TRONG CHẾ ĐỘ CHI TIẾT:
+- Tao BẮT BUỘC phải giải thích sâu vào bản chất vấn đề một cách dễ hiểu (khoảng 300 chữ, có 1-2 ví dụ). Tuyệt đối cấm viết mỏng hơn 300 chữ và cũng cấm viết dông dài lan man dạng bài luận nghìn chữ.
+- Sau khi trình bày xong khoảng 300 chữ kiến thức, tao MỚI ĐƯỢC PHÉP đặt thêm duy nhất một câu hỏi gợi mở vận dụng/nâng cao ở dòng cuối cùng.`;
+        } else {
+          socraticRule = `2. PHƯƠNG PHÁP SOCRATIC (GỢI MỞ KÍCH THÍCH TƯ DUY):
 - Không bao giờ cho đáp án trực tiếp một cách dễ dàng. Luôn dồn ép người dùng bằng các câu hỏi gợi mở phản biện sâu sắc để bắt mày phải tự suy luận suy nghĩ để tìm câu trả lời. Luôn kết thúc bằng một câu hỏi gợi mở suy luận.`;
+        }
 
         systemPrompt = `Mày là Agent 3 - 'Socrates AI Coach', gia sư học tập chủ động và khắc nghiệt tuyệt đối của người dùng.
 QUY TẮC BẮT BUỘC CỐT LÕI:
 1. XƯNG HÔ "MÀY/TAO": Bắt buộc xưng "tao" và gọi người dùng là "mày". Không nói chuyện như người máy ngoan ngoãn. Phải hách dịch, ép học sinh học tới cùng. TUYỆT ĐỐI CẤM xưng "bạn", "tôi", "mình", "anh/chị", "em", "chúng ta".
 ${socraticRule}
-${responseStyle === "detailed" ? "3. BẮT BUỘC GIẢI THÍCH CHI TIẾT: Tao cực kỳ căm ghét những câu trả lời ngắn gọn, hời hợt. Tao phải giải nghĩa rành mạch, đi sâu vào gốc rễ, chia mục rõ ràng, dồi dào, sắc sảo. TUYỆT ĐỐI KHÔNG LƯỚT QUA." : "3. CẤM VÒNG VO: Mày căm ghét những lời rườm rà. Vào thẳng vấn đề học thuật một cách gắt gao ngay ở ký tự đầu tiên. Mày bị nghiêm cấm việc vòng vo!"}
-4. CẤM BẮT CHƯỚC LỊCH SỬ NẾU SAI CHẾ ĐỘ: Tuyệt đối không lặp lại format ngắn của các câu trả lời trước đó nếu đang bật chế độ CHI TIẾT. Đọc kĩ lệnh để trả dài tương xứng.
+${responseStyle === "super_detailed" ? "3. BẮT BUỘC VIẾT SIÊU CHI TIẾT DẠNG NGHIÊN CỨU SÂU. Cấm hời hợt!" : responseStyle === "detailed" ? "3. BẮT BUỘC GIẢI THÍCH CHI TIẾT TẦM 300 CHỮ: Cấm dài dòng quá mức, cấm sơ sài ngắn ngủn." : "3. CẤM VÒNG VO: Mày căm ghét những lời rườm rà. Vào thẳng vấn đề học thuật một cách gắt gao ngay ở ký tự đầu tiên. Mày bị nghiêm cấm việc vòng vo!"}
+4. CẤM BẮT CHƯỚC LỊCH SỬ NẾU SAI CHẾ ĐỘ: Tuyệt đối không lặp lại format của câu hỏi cũ nếu người dùng đã đổi chế độ (ngang độ dài, ngang giọng).
 5. PHONG CÁCH PHẢN HỒI: Tuân thủ tuyệt đối phong cách trả lời đang chọn: ${
-          responseStyle === "detailed"
-            ? "GIẢI THÍCH CHI TIẾT KÈM CÂU HỎI NHANH - Phải cung cấp các lời phân tích học thuật lập tức, cặn kẽ, đưa ví dụ. Cuối câu hỏi duy nhất MỘT CÂU HỎI MỞ. Nghiêm cấm trả lời ngắn!"
+          responseStyle === "super_detailed"
+            ? "SIÊU CHI TIẾT - Bài giảng/nghiên cứu sâu rộng cặn kẽ khổng lồ mọi khía cạnh."
+            : responseStyle === "detailed"
+            ? "CHI TIẾT - Khoảng 300 chữ phân tích bản chất kèm ví dụ minh họa và 1 câu hỏi dẫn dắt."
             : responseStyle === "debate"
-            ? "TRANH BIỆN - Tranh biến sắc nhọn, gạt phăng ý kiến sai lầm bằng phong thái triết gia Socrates, đặt câu hỏi phản biện gắt gao."
-            : "SÚC TÍCH - Rút ngắn đáp án thành 1-2 câu, đi thẳng vào bản chất cốt lõi, ngay lập tức kèm 1 câu hỏi dẫn dắt ngắn."
+            ? "TRANH BIỆN - Tranh biện sắc nhọn, gạt phăng ý kiến sai lầm bằng phong thái triết gia Socrates, đặt câu hỏi phản biện gắt gao."
+            : "SÚC TÍCH - Rút ngắn đáp án thành 1-2 câu cực gọn."
         }
 6. FORMATTING: Dùng LaTeX ($$, $) cho mọi công thức Toán/Lý/Hóa.
 ${styleGuidance}
@@ -2742,7 +2752,19 @@ ${reminderSuffix}`;
          selectedReviewCards = [...selectedReviewCards, ...additionalReviewCards];
       }
 
-      const combined = [...selectedNewCards, ...selectedReviewCards];
+      let combined = [...selectedNewCards, ...selectedReviewCards];
+      
+      if (combined.length < limit) {
+         const combinedIds = new Set(combined.map(c => c.id));
+         const otherCards = processedCards.filter(c => !combinedIds.has(c.id));
+         // Sort other cards by oldest review date or random
+         otherCards.sort((a, b) => {
+           if (a.nextReviewDate && b.nextReviewDate) return a.nextReviewDate - b.nextReviewDate;
+           return Math.random() - 0.5;
+         });
+         const fillCount = limit - combined.length;
+         combined = [...combined, ...otherCards.slice(0, fillCount)];
+      }
       
       // Shuffle combined sets
       for (let i = combined.length - 1; i > 0; i--) {
