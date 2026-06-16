@@ -4,6 +4,8 @@ import { useTheme } from './ThemeProvider';
 export const ParticleBackground = () => {
   const { isFixLagEnabled } = useTheme();
 
+  const numStars = isFixLagEnabled ? 12 : 40;
+
   const stars = useMemo(() => {
     return Array.from({ length: 40 }).map((_, i) => ({
       id: i,
@@ -15,11 +17,9 @@ export const ParticleBackground = () => {
     }));
   }, []);
 
-  if (isFixLagEnabled) return null;
-
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-60">
-      {stars.map((star) => (
+      {stars.slice(0, numStars).map((star) => (
         <div
           key={star.id}
           className="absolute rounded-full bg-orange-600 dark:bg-orange-500 will-change-transform"
@@ -28,9 +28,10 @@ export const ParticleBackground = () => {
             top: star.top,
             width: star.size,
             height: star.size,
-            animation: `sparklePulse ${star.duration} infinite ease-in-out`,
+            animation: isFixLagEnabled ? 'none' : `sparklePulse ${star.duration} infinite ease-in-out`,
             animationDelay: star.delay,
             transform: 'translateZ(0)',
+            opacity: isFixLagEnabled ? 0.3 : 1
           }}
         />
       ))}

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { store, Deck, saveLocalUserDecks } from "../lib/store";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { Plus, X, Play, TrendingUp, Users, Target, BookOpen, BrainCircuit, Activity, Flame, ArrowLeft, CheckCircle2, XCircle, ArrowRight, Loader2, Trophy, Sparkles, Maximize2, Minimize2, Bell, BellOff, BellRing, Settings, AlertTriangle, Trash2, Snowflake, Volume2, VolumeX, Clock, Network, Award, Bot, User, Crown, ChevronUp, ChevronDown, Minus, Shield, RefreshCw, Heart, LogOut, Bug, Type, Library, Camera, Edit3, HelpCircle, Cpu, ShoppingBag, Lock, Zap, Ghost, ShieldAlert, Eye, BarChart3 } from "lucide-react";
+import { Plus, X, Play, TrendingUp, Users, Target, BookOpen, BrainCircuit, Activity, Flame, ArrowLeft, CheckCircle2, XCircle, ArrowRight, Loader2, Trophy, Sparkles, Maximize2, Minimize2, Bell, BellOff, BellRing, Settings, AlertTriangle, Trash2, Snowflake, Volume2, VolumeX, Clock, Network, Award, Bot, User, Crown, ChevronUp, ChevronDown, Minus, Shield, RefreshCw, Heart, LogOut, Bug, Type, Library, Camera, Edit3, HelpCircle, Cpu, ShoppingBag, Lock, Zap, Ghost, ShieldAlert, Eye, BarChart3, Download } from "lucide-react";
 import { MarcusAureliusIcon } from "../components/MarcusAureliusIcon";
 import { cn } from "../lib/utils";
 import { safeRequest } from "../utils/apiClient";
 import { db, auth, handleFirestoreError, OperationType, FirebaseListenerManager } from "../lib/firebase";
 import { signOut } from "firebase/auth";
-import { collection, doc, onSnapshot, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, limit, orderBy } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where, getDocs, updateDoc, setDoc, arrayUnion, arrayRemove, limit, orderBy } from "firebase/firestore";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
@@ -254,8 +254,11 @@ export default function StudentDashboard() {
   const [quote] = useState(() => MOTIVATION_QUOTES[Math.floor(Math.random() * MOTIVATION_QUOTES.length)]);
   const [showTutorial, setShowTutorial] = useState(false);
   const [activeLoreItem, setActiveLoreItem] = useState<string | null>(null);
+  const [appDownloadConfig, setAppDownloadConfig] = useState({ url: "", version: "", releaseNotes: "" });
+  const [isEditingAppDownload, setIsEditingAppDownload] = useState(false);
+  const [isSavingAppDownload, setIsSavingAppDownload] = useState(false);
   
-  const [activeTab, setActiveTab] = useState<"study" | "ranking" | "quiz" | "mock_exam_setup" | "settings" | "history" | "skill_tree" | "all_sets" | "groups" | "achievements" | "profile" | "create_deck" | "cyberpunk" | "shop">(() => {
+  const [activeTab, setActiveTab] = useState<"study" | "ranking" | "quiz" | "mock_exam_setup" | "settings" | "history" | "skill_tree" | "all_sets" | "groups" | "achievements" | "profile" | "create_deck" | "cyberpunk" | "shop" | "app_download">(() => {
     return (sessionStorage.getItem('student_dashboard_tab') as any) || "study";
   });
 
@@ -267,6 +270,15 @@ export default function StudentDashboard() {
   const [isEditingProfileName, setIsEditingProfileName] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const profileFileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "system_config/app_download"), (docSnap) => {
+      if (docSnap.exists()) {
+        setAppDownloadConfig(docSnap.data() as any);
+      }
+    });
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     if (user && !isEditingProfileName) {
@@ -1771,6 +1783,7 @@ export default function StudentDashboard() {
           { id: "all_sets", label: "Bộ Học", icon: Library },
           { id: "create_deck", label: "Tạo Bộ Thẻ", icon: Plus },
           { id: "shop", label: "Chợ Vật Phẩm", icon: ShoppingBag },
+          { id: "app_download", label: "Tải App", icon: Download },
           { id: "ranking", label: "Xếp Hạng", icon: MarcusAureliusIcon },
           { id: "skill_tree", label: "Lộ Trình", icon: Network },
           { id: "cyberpunk", label: "Cinematic Room", icon: Sparkles },
@@ -2924,6 +2937,136 @@ export default function StudentDashboard() {
             ) : (
               <div className="text-center p-8 opacity-50 font-bold border-2 border-dashed border-orange-600/20 dark:border-orange-500/30 rounded-xl mt-8 max-w-2xl mx-auto">
                 Chưa có học sinh nào trên bảng xếp hạng tuần này.
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {activeTab === "app_download" && (
+        <motion.div 
+          key="app-download-tab"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          className="max-w-4xl mx-auto space-y-6"
+        >
+          <div className="glass p-6 md:p-8 rounded-3xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl relative z-10">
+                <Download className="w-8 h-8" />
+              </div>
+              <div className="relative z-10">
+                <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-emerald-200">Tải Ứng Dụng (APK)</h2>
+                <p className="text-zinc-400">Tải ứng dụng cho trải nghiệm mượt mà và đầy đủ trên di động.</p>
+              </div>
+            </div>
+
+            {isEditingAppDownload ? (
+              <div className="space-y-4 relative z-10">
+                <div>
+                  <label className="block text-sm font-bold text-zinc-400 mb-2">Đường Dẫn APK (Link tải)</label>
+                  <input
+                    type="url"
+                    className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                    placeholder="https://..."
+                    value={appDownloadConfig.url}
+                    onChange={e => setAppDownloadConfig(prev => ({ ...prev, url: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-zinc-400 mb-2">Số Phiên Bản (e.g. 1.0.0)</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                    placeholder="1.0.0"
+                    value={appDownloadConfig.version}
+                    onChange={e => setAppDownloadConfig(prev => ({ ...prev, version: e.target.value }))}
+                  />
+                </div>
+                <div>
+                    <label className="block text-sm font-bold text-zinc-400 mb-2">Ghi Chú Bản Phát Hành</label>
+                    <textarea 
+                        rows={4}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                        placeholder="Có gì mới trong phiên bản này..."
+                        value={appDownloadConfig.releaseNotes}
+                        onChange={e => setAppDownloadConfig(prev => ({...prev, releaseNotes: e.target.value}))}
+                    />
+                </div>
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    onClick={async () => {
+                        setIsSavingAppDownload(true);
+                        try {
+                            await setDoc(doc(db, "system_config/app_download"), {
+                                url: appDownloadConfig.url,
+                                version: appDownloadConfig.version,
+                                releaseNotes: appDownloadConfig.releaseNotes,
+                                updatedAt: new Date().toISOString()
+                            }, { merge: true });
+                            toast.success("Đã cập nhật link tải App!");
+                            setIsEditingAppDownload(false);
+                        } catch(e: any) {
+                            toast.error("Lỗi khi lưu: " + e.message);
+                        } finally {
+                            setIsSavingAppDownload(false);
+                        }
+                    }}
+                    disabled={isSavingAppDownload}
+                    className="px-6 py-3 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 flex items-center justify-center gap-2"
+                  >
+                    {isSavingAppDownload ? <Loader2 className="w-5 h-5 animate-spin"/> : <CheckCircle2 className="w-5 h-5"/>}
+                    Lưu Cấu Hình
+                  </button>
+                  <button 
+                    onClick={() => setIsEditingAppDownload(false)}
+                    className="px-6 py-3 bg-zinc-800 text-white font-bold rounded-xl hover:bg-zinc-700"
+                  >
+                    Hủy
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="relative z-10 flex flex-col items-center justify-center py-12 space-y-6 text-center">
+                {appDownloadConfig.url ? (
+                  <>
+                     <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl max-w-lg w-full">
+                       <h3 className="text-xl font-bold text-white mb-2">Phiên Bản {appDownloadConfig.version || "Mới Nhất"}</h3>
+                       {appDownloadConfig.releaseNotes && (
+                           <p className="text-zinc-400 mb-6">{appDownloadConfig.releaseNotes}</p>
+                       )}
+                       <a 
+                          href={appDownloadConfig.url} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 bg-emerald-500 px-8 py-4 rounded-xl text-black font-black hover:bg-emerald-400 hover:scale-105 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                       >
+                         <Download className="w-6 h-6" /> Tải Xuống APK
+                       </a>
+                     </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center text-zinc-500 space-y-4">
+                     <Lock className="w-16 h-16 opacity-50" />
+                     <p>Hiện chưa có bản cập nhật ứng dụng nào được xuất bản.</p>
+                  </div>
+                )}
+                
+                {user && (user.role === "admin" || user.role === "Admin" || user.role === "teacher") && (
+                    <div className="mt-8">
+                      <button 
+                        onClick={() => setIsEditingAppDownload(true)}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold hover:bg-purple-500/20 transition"
+                      >
+                        <Edit3 className="w-4 h-4" /> Edit Dành Cho Admin
+                      </button>
+                    </div>
+                )}
               </div>
             )}
           </div>
@@ -4616,15 +4759,15 @@ export default function StudentDashboard() {
                  </div>
               </div>
 
-              {/* Tùy chọn Tiết kiệm hiệu năng / Fix Lag */}
+              {/* Tùy chọn Tiết kiệm pin / Fix Lag */}
               <div className="stone-carved card-3d p-6 rounded-xl flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
                  <div className="space-y-2 max-w-lg">
                     <h4 className="font-serif italic font-medium text-xl flex items-center gap-2">
                        <Snowflake className={cn("w-5 h-5", isFixLagEnabled ? "text-green-500 animate-[spin_4s_linear_infinite]" : "text-zinc-400")} />
-                       Chế Độ Mượt - Giảm Lag (Eco / Fix Lag)
+                       Tiết Kiệm Pin / Fix Lag (Battery Saver)
                     </h4>
                     <p className="font-sans font-light tracking-wide opacity-70 text-sm">
-                       Khuyên dùng cho điện thoại và máy tính cấu hình yếu. Giúp loại bỏ các hiệu ứng hạt nền và các hoạt ảnh nặng, hiệu ứng đổ bóng phức tạp giúp tăng tốc phản hồi tối đa.
+                       Giảm tần số quét của hiệu ứng nền và tắt các hoạt ảnh không thiết yếu. Khuyên dùng để tiết kiệm pin hoặc cho thiết bị cấu hình yếu để tăng tốc tối đa.
                     </p>
                  </div>
                  <button 
@@ -4635,7 +4778,7 @@ export default function StudentDashboard() {
                     )}
                  >
                     <Snowflake className="w-5 h-5" />
-                    {isFixLagEnabled ? "Đang Bật Chế Độ Mượt" : "Bật Fix Lag"}
+                    {isFixLagEnabled ? "Đang Bật Tiết Kiệm Pin" : "Bật Tiết Kiệm Pin"}
                  </button>
               </div>
 
