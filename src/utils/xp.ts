@@ -9,6 +9,10 @@ export const ALL_TITLES = [
   { id: "Quân Vương Triết Học", isCustom: true, desc: "Danh hiệu bí ẩn, siêu hiếm. Đổi thưởng từ Agora với mức giá đắt đỏ. Hiệu ứng: Chân lý 7 màu luân hồi." },
   { id: "Thủ Lĩnh Sparta", isCustom: true, desc: "Danh hiệu bất bại, độc nhất vô nhị. Đấu Trường vinh danh. Hiệu ứng: Ngọc lục bảo chiến thần." },
   { id: "Học Giả Bách Khoa", isCustom: true, desc: "Phong hiệu danh giá mua từ Agora. Vàng kim chói lọi rực rỡ." },
+  { id: "Người Cầm Trịch Chân Lý", isCustom: true, desc: "Người nắm quyền định đoạt đúng sai trong vũ trụ tu thư. Khí tức uy viễn." },
+  { id: "Hậu Duệ Của Aristotle", isCustom: true, desc: "Kế thừa ngọn lửa triết học thời đại. Sóng biển xanh lục bảo chuyển động." },
+  { id: "Lãnh Chúa Thời Không", isCustom: true, desc: "Người thao túng bánh xe thời gian. Chuyển sắc ngân hà vô tận." },
+  { id: "Thần Thoại Kỷ Nguyên Mới", isCustom: true, desc: "Sự hiện diện của ngài tạo nên lịch sử mới. Hào quang kim cương tối thượng." },
 ];
 
 export const getUnlockedTitles = (level: number, currentTitle?: string, unlockedCustomTitles: string[] = []) => {
@@ -43,28 +47,28 @@ export const getLevelInfo = (xp: number) => {
   let badgeColors = "from-zinc-400 to-zinc-500 text-zinc-900";
   
   if (currentLevel >= 3) {
-    titleColor = "text-blue-500 font-semibold";
+    titleColor = "text-blue-500 font-semibold drop-shadow-sm";
     badgeColors = "from-blue-400 to-blue-500 text-white shadow-blue-500/20";
   }
   if (currentLevel >= 6) {
-    titleColor = "text-purple-500 font-semibold";
+    titleColor = "text-purple-500 font-bold drop-shadow-sm";
     badgeColors = "from-purple-400 to-purple-600 text-white shadow-purple-500/30";
   }
   if (currentLevel >= 10) {
-    titleColor = "text-orange-500 font-bold";
+    titleColor = "text-orange-500 font-extrabold drop-shadow-md";
     badgeColors = "from-orange-400 to-orange-500 text-white shadow-orange-500/40";
   }
   if (currentLevel >= 15) {
-    titleColor = "text-red-500 font-bold";
+    titleColor = "text-red-500 font-black drop-shadow-md animate-pulse";
     badgeColors = "from-rose-500 to-red-600 text-white shadow-red-500/50";
   }
   if (currentLevel >= 20) {
-    titleColor = "text-orange-600 font-black animate-pulse";
-    badgeColors = "from-orange-300 via-orange-500 to-orange-600 text-white shadow-orange-500/60 ring-2 ring-orange-400/50";
+    titleColor = "text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-600 font-black drop-shadow-[0_2px_10px_rgba(249,115,22,0.6)] animate-pulse";
+    badgeColors = "from-orange-300 via-orange-500 to-red-600 text-white shadow-[0_0_15px_rgba(234,88,12,0.8)] ring-2 ring-orange-400/50";
   }
   if (currentLevel >= 30) {
-    titleColor = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-fuchsia-500 to-orange-400 font-black";
-    badgeColors = "from-blue-500 via-purple-500 to-orange-500 text-white shadow-fuchsia-500/60 ring-2 ring-purple-400/50";
+    titleColor = "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-fuchsia-500 to-orange-400 font-black drop-shadow-[0_2px_15px_rgba(217,70,239,0.8)]";
+    badgeColors = "from-blue-500 via-purple-500 to-orange-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.8)] ring-2 ring-fuchsia-400/80 animate-rainbow-bg";
   }
 
   return {
@@ -83,15 +87,27 @@ export const getLevelInfo = (xp: number) => {
 export const getCustomTitleTextClass = (title?: string, fallbackClass?: string) => {
   if (title === "Quân Vương Triết Học") {
     // 7 colors
-    return "text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-500 via-green-500 via-blue-500 to-purple-500 animate-rainbow-text font-black drop-shadow-sm";
+    return "text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-500 via-green-500 via-blue-500 to-purple-500 animate-rainbow-text font-black drop-shadow-[0_2px_15px_rgba(239,68,68,0.5)]";
   }
   if (title === "Thủ Lĩnh Sparta") {
-    return "text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-emerald-500 font-black drop-shadow-sm";
+    return "text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-emerald-500 font-black drop-shadow-[0_2px_10px_rgba(16,185,129,0.5)]";
   }
   if (title === "Học Giả Bách Khoa") {
-    return "text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 font-black drop-shadow-sm";
+    return "text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-yellow-400 to-orange-600 font-black drop-shadow-[0_2px_15px_rgba(250,204,21,0.5)]";
   }
-  return title ? "text-orange-600 dark:text-orange-400 font-bold" : (fallbackClass || "");
+  if (title === "Người Cầm Trịch Chân Lý") {
+    return "text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 font-black drop-shadow-[0_2px_15px_rgba(56,189,248,0.5)] tracking-widest";
+  }
+  if (title === "Hậu Duệ Của Aristotle") {
+    return "text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-400 to-cyan-500 font-black drop-shadow-[0_2px_20px_rgba(20,184,166,0.6)] animate-pulse";
+  }
+  if (title === "Lãnh Chúa Thời Không") {
+    return "text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-fuchsia-500 to-red-500 font-black animate-rainbow-bg bg-size-200 drop-shadow-[0_5px_20px_rgba(168,85,247,0.7)]";
+  }
+  if (title === "Thần Thoại Kỷ Nguyên Mới") {
+    return "text-white font-black drop-shadow-[0_0_20px_rgba(255,255,255,1)] animate-pulse tracking-[0.15em] bg-clip-text bg-gradient-to-b from-white to-neutral-500";
+  }
+  return title ? "text-orange-600 dark:text-orange-400 font-bold drop-shadow-sm" : (fallbackClass || "");
 };
 
 export const BORDERS_REGISTRY = [
@@ -119,6 +135,18 @@ export const getCustomTitleBadgeClass = (title?: string, fallbackClass?: string)
   }
   if (title === "Học Giả Bách Khoa") {
     return "bg-orange-950 text-orange-400 font-black ring-2 ring-orange-500/80 shadow-[0_0_20px_rgba(245,158,11,0.4)]";
+  }
+  if (title === "Người Cầm Trịch Chân Lý") {
+    return "bg-indigo-950 text-cyan-400 font-black ring-2 ring-cyan-500/80 shadow-[0_0_20px_rgba(34,211,238,0.5)] tracking-wide";
+  }
+  if (title === "Hậu Duệ Của Aristotle") {
+    return "bg-teal-950 text-teal-300 font-black ring-2 ring-emerald-500/80 shadow-[0_0_25px_rgba(16,185,129,0.6)] animate-pulse";
+  }
+  if (title === "Lãnh Chúa Thời Không") {
+    return "bg-black text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-fuchsia-500 to-red-500 font-black ring-2 ring-fuchsia-500/80 shadow-[0_0_25px_rgba(217,70,239,0.6)] animate-rainbow-bg bg-size-200";
+  }
+  if (title === "Thần Thoại Kỷ Nguyên Mới") {
+    return "bg-zinc-900 text-white font-black ring-4 ring-white/80 shadow-[0_0_30px_rgba(255,255,255,1)] animate-pulse tracking-widest";
   }
   return title ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold" : (fallbackClass || "");
 };

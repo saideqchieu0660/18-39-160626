@@ -3856,6 +3856,223 @@ export default function StudentDashboard() {
               </div>
             </div>
 
+            {/* Item 11 [NEW TITLE]: Người Cầm Trịch Chân Lý */}
+            <div className="glass p-6 rounded-2xl border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute -top-12 -right-12 w-24 h-24 bg-cyan-500/5 rounded-full group-hover:scale-150 transition-transform duration-500" />
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="p-3 bg-cyan-500/10 rounded-xl text-cyan-500">
+                    <Award className="w-6 h-6 animate-pulse" />
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 rounded-full text-xs font-bold">
+                    Danh Hiệu Quyền Uy
+                  </span>
+                  </div>
+                </div>
+                <h4 className="text-lg font-bold mb-1 text-zinc-800 dark:text-zinc-200">Danh hiệu 'Người Cầm Trịch Chân Lý'</h4>
+                <p className="font-sans font-light tracking-wide text-xs opacity-70 mb-4 min-h-[40px]">
+                  Người nắm quyền định đoạt đúng sai trong vũ trụ tu thư. Khí tức uy viễn, vang danh thiên cổ. Tiêu tốn 250 Tinh Hoa.
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
+                <span className="font-extrabold text-base text-cyan-600 dark:text-cyan-400">250 Tinh Hoa</span>
+                <button
+                  onClick={async () => {
+                    const titleName = "Người Cầm Trịch Chân Lý";
+                    const price = 250;
+                    if (user?.title === titleName || user?.unlockedCustomTitles?.includes(titleName)) {
+                      alert("Tôn danh này ngài đã sở hữu rồi, hãy vào danh sách Danh Hiệu để thay đổi!");
+                      return;
+                    }
+                    if (user && user.points < price) {
+                      alert(`Tích trữ đủ ${price} điểm Tinh Hoa để đổi thưởng nhé!`);
+                      return;
+                    }
+                    if (!confirm(`Mua danh hiệu ${titleName} với giá ${price} Tinh Hoa?`)) return;
+                    try {
+                      const newPoints = user!.points - price;
+                      const newTitles = Array.from(new Set([...(user!.unlockedCustomTitles || []), titleName]));
+                      const { dbService } = await import("../lib/firebase");
+                      await dbService.updateUserProfile(user!.id, { points: newPoints, title: titleName, unlockedCustomTitles: newTitles });
+                      store.updateCurrentUser({ points: newPoints, title: titleName, unlockedCustomTitles: newTitles }, true);
+                      alert(`Tuyệt vời! Ngài đã là ${titleName}!`);
+                      setForceRender(prev => prev + 1);
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                  disabled={user ? user.points < 250 : true}
+                  className="px-4 py-2 bg-cyan-500 text-white rounded-xl text-xs font-bold shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/40 active:scale-95 transition"
+                >
+                  { (user?.title === "Người Cầm Trịch Chân Lý" || user?.unlockedCustomTitles?.includes("Người Cầm Trịch Chân Lý")) ? "Đã Sở Hữu" : "Mua Danh Hiệu"}
+                </button>
+              </div>
+            </div>
+
+            {/* Item 12 [NEW TITLE]: Hậu Duệ Của Aristotle */}
+            <div className="glass p-6 rounded-2xl border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute -top-12 -right-12 w-24 h-24 bg-emerald-500/5 rounded-full group-hover:scale-150 transition-transform duration-500" />
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="p-3 bg-emerald-500/10 rounded-xl text-emerald-500">
+                    <Award className="w-6 h-6 animate-pulse" />
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-bold">
+                    Huyền Thoại Trỗi Dậy
+                  </span>
+                  </div>
+                </div>
+                <h4 className="text-lg font-bold mb-1 text-zinc-800 dark:text-zinc-200">Danh hiệu 'Hậu Duệ Của Aristotle'</h4>
+                <p className="font-sans font-light tracking-wide text-xs opacity-70 mb-4 min-h-[40px]">
+                  Kế thừa ngọn lửa triết học thời đại. Sóng biển xanh lục bảo chuyển động. Một tôn hiệu hiếm có trị giá 350 Tinh Hoa.
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
+                <span className="font-extrabold text-base text-emerald-600 dark:text-emerald-400">350 Tinh Hoa</span>
+                <button
+                  onClick={async () => {
+                    const titleName = "Hậu Duệ Của Aristotle";
+                    const price = 350;
+                    if (user?.title === titleName || user?.unlockedCustomTitles?.includes(titleName)) {
+                      alert("Tôn danh này ngài đã sở hữu rồi!");
+                      return;
+                    }
+                    if (user && user.points < price) {
+                      alert(`Cần ${price} điểm Tinh Hoa để đổi thưởng nhé!`);
+                      return;
+                    }
+                    if (!confirm(`Mua danh hiệu ${titleName} với giá ${price} Tinh Hoa?`)) return;
+                    try {
+                      const newPoints = user!.points - price;
+                      const newTitles = Array.from(new Set([...(user!.unlockedCustomTitles || []), titleName]));
+                      const { dbService } = await import("../lib/firebase");
+                      await dbService.updateUserProfile(user!.id, { points: newPoints, title: titleName, unlockedCustomTitles: newTitles });
+                      store.updateCurrentUser({ points: newPoints, title: titleName, unlockedCustomTitles: newTitles }, true);
+                      alert(`Đã trang bị danh hiệu: ${titleName}!`);
+                      setForceRender(prev => prev + 1);
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                  disabled={user ? user.points < 350 : true}
+                  className="px-4 py-2 bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/40 active:scale-95 transition"
+                >
+                  { (user?.title === "Hậu Duệ Của Aristotle" || user?.unlockedCustomTitles?.includes("Hậu Duệ Của Aristotle")) ? "Đã Sở Hữu" : "Mua Danh Hiệu"}
+                </button>
+              </div>
+            </div>
+
+            {/* Item 13 [NEW TITLE]: Lãnh Chúa Thời Không */}
+            <div className="glass p-6 rounded-2xl border border-fuchsia-500/20 hover:border-fuchsia-500/40 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute -top-12 -right-12 w-24 h-24 bg-fuchsia-500/5 rounded-full group-hover:scale-150 transition-transform duration-500" />
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="p-3 bg-fuchsia-500/10 rounded-xl text-fuchsia-500">
+                    <Award className="w-6 h-6 animate-pulse" />
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 bg-fuchsia-500/20 text-fuchsia-700 dark:text-fuchsia-300 rounded-full text-xs font-bold animate-rainbow-bg text-white">
+                    Chiến Thần Đa Vũ Trụ
+                  </span>
+                  </div>
+                </div>
+                <h4 className="text-lg font-bold mb-1 text-zinc-800 dark:text-zinc-200">Danh hiệu 'Lãnh Chúa Thời Không'</h4>
+                <p className="font-sans font-light tracking-wide text-xs opacity-70 mb-4 min-h-[40px]">
+                  Người thao túng bánh xe thời gian. Chuyển sắc ngân hà vô tận. Tôn danh ma lực có giá 500 Tinh Hoa.
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
+                <span className="font-extrabold text-base text-fuchsia-600 dark:text-fuchsia-400">500 Tinh Hoa</span>
+                <button
+                  onClick={async () => {
+                    const titleName = "Lãnh Chúa Thời Không";
+                    const price = 500;
+                    if (user?.title === titleName || user?.unlockedCustomTitles?.includes(titleName)) {
+                      alert("Tôn danh này ngài đã sở hữu rồi!");
+                      return;
+                    }
+                    if (user && user.points < price) {
+                      alert(`Cần ${price} điểm Tinh Hoa để đổi thưởng!`);
+                      return;
+                    }
+                    if (!confirm(`Mua danh hiệu ${titleName} với giá ${price} Tinh Hoa?`)) return;
+                    try {
+                      const newPoints = user!.points - price;
+                      const newTitles = Array.from(new Set([...(user!.unlockedCustomTitles || []), titleName]));
+                      const { dbService } = await import("../lib/firebase");
+                      await dbService.updateUserProfile(user!.id, { points: newPoints, title: titleName, unlockedCustomTitles: newTitles });
+                      store.updateCurrentUser({ points: newPoints, title: titleName, unlockedCustomTitles: newTitles }, true);
+                      alert(`Ngài đã trở thành ${titleName}!`);
+                      setForceRender(prev => prev + 1);
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                  disabled={user ? user.points < 500 : true}
+                  className="px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-violet-500 text-white rounded-xl text-xs font-bold shadow-md shadow-fuchsia-500/20 hover:shadow-fuchsia-500/40 active:scale-95 transition"
+                >
+                  { (user?.title === "Lãnh Chúa Thời Không" || user?.unlockedCustomTitles?.includes("Lãnh Chúa Thời Không")) ? "Đã Sở Hữu" : "Mua Danh Hiệu"}
+                </button>
+              </div>
+            </div>
+
+            {/* Item 14 [NEW TITLE]: Thần Thoại Kỷ Nguyên Mới */}
+            <div className="glass p-6 rounded-2xl border border-zinc-400/50 hover:border-white/80 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl pointer-events-none" />
+              <div className="absolute -top-12 -right-12 w-24 h-24 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-500 blur-xl" />
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="p-3 bg-zinc-800 rounded-xl text-white shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+                    <Award className="w-6 h-6 animate-pulse" />
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-1 bg-white text-black rounded-full text-xs font-bold tracking-widest shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+                    VƯỢT LÊN THẦN LINH
+                  </span>
+                  </div>
+                </div>
+                <h4 className="text-lg font-bold mb-1 text-zinc-900 dark:text-zinc-100 drop-shadow-sm">Thần Thoại Kỷ Nguyên Mới</h4>
+                <p className="font-sans font-light tracking-wide text-xs opacity-80 mb-4 min-h-[40px] dark:text-zinc-300">
+                  Sự hiện diện của ngài tạo nên lịch sử mới. Hào quang kim cương tối thượng chói lọi. Danh xưng độc nhất vô nhị trị giá 1000 Tinh Hoa.
+                </p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/20 flex items-center justify-between">
+                <span className="font-extrabold text-base text-zinc-800 dark:text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">1000 Tinh Hoa</span>
+                <button
+                  onClick={async () => {
+                    const titleName = "Thần Thoại Kỷ Nguyên Mới";
+                    const price = 1000;
+                    if (user?.title === titleName || user?.unlockedCustomTitles?.includes(titleName)) {
+                      alert("Tôn danh này ngài đã sở hữu rồi!");
+                      return;
+                    }
+                    if (user && user.points < price) {
+                      alert(`Cần ${price} điểm Tinh Hoa để đổi thưởng!`);
+                      return;
+                    }
+                    if (!confirm(`Mua danh hiệu ${titleName} với giá ${price} Tinh Hoa?`)) return;
+                    try {
+                      const newPoints = user!.points - price;
+                      const newTitles = Array.from(new Set([...(user!.unlockedCustomTitles || []), titleName]));
+                      const { dbService } = await import("../lib/firebase");
+                      await dbService.updateUserProfile(user!.id, { points: newPoints, title: titleName, unlockedCustomTitles: newTitles });
+                      store.updateCurrentUser({ points: newPoints, title: titleName, unlockedCustomTitles: newTitles }, true);
+                      alert(`Ngài là một huyền thoại sống: ${titleName}!`);
+                      setForceRender(prev => prev + 1);
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                  disabled={user ? user.points < 1000 : true}
+                  className="px-4 py-2 bg-gradient-to-r from-zinc-700 to-black text-white dark:from-white dark:to-zinc-300 dark:text-black rounded-xl text-xs font-bold shadow-[0_0_15px_rgba(255,255,255,0.4)] hover:shadow-[0_0_25px_rgba(255,255,255,0.8)] active:scale-95 transition"
+                >
+                  { (user?.title === "Thần Thoại Kỷ Nguyên Mới" || user?.unlockedCustomTitles?.includes("Thần Thoại Kỷ Nguyên Mới")) ? "Đã Sở Hữu" : "Chứng Nhận Thần Thoại"}
+                </button>
+              </div>
+            </div>
+
             {/* Item 10 [NEW]: United Engine Code (Thêm 1 lượt sử dụng United Engine) */}
             <div className="glass p-6 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
               <div className="absolute -top-12 -right-12 w-24 h-24 bg-blue-500/5 rounded-full group-hover:scale-150 transition-transform duration-500" />

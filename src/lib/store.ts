@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { safeFetch } from "../utils/safeFetch";
 
 export type Role = "student" | "teacher" | "admin" | "Admin";
 
@@ -196,7 +197,7 @@ const checkAndResetWeeklyPoints = () => {
     console.log(`Weekly points have been reset to 0 for week ${currentWeek}.`);
     
     // Kích hoạt dọn dẹp Firestore tự động tuần đầy đủ cho toàn hệ thống
-    fetch("/api/automation/reset-weekly-points", { method: "POST" })
+    safeFetch("/api/automation/reset-weekly-points", { method: "POST" })
       .then(r => r.json())
       .then(d => {
         console.log("Auto-Reset Firebase Weekly Points response:", d);
@@ -401,7 +402,7 @@ export const store = {
                     });
                 }
                 // Đồng thời kích hoạt dọn dẹp Firestore tự động tuần đầy đủ cho toàn hệ thống
-                fetch("/api/automation/reset-weekly-points", { method: "POST" })
+                safeFetch("/api/automation/reset-weekly-points", { method: "POST" })
                   .then(r => r.json())
                   .then(d => console.log("System-wide keypoints reset:", d))
                   .catch(err => console.error("System-wide keypoints reset failed:", err));
