@@ -45,20 +45,37 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       setShowExportMenu(false);
       
       const { jsPDF } = await import('jspdf');
-      const { toPng } = await import('html-to-image');
+      const html2canvas = (await import('html2canvas')).default;
       
-      // Đợi font loading (nếu có)
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Temporarily bring the element to viewport but behind everything to ensure browser renders it
+      const originalTop = targetRef.style.top;
+      const originalLeft = targetRef.style.left;
+      const originalZIndex = targetRef.style.zIndex;
+      const originalPosition = targetRef.style.position;
+      
+      targetRef.style.position = 'fixed';
+      targetRef.style.top = '0';
+      targetRef.style.left = '0';
+      targetRef.style.zIndex = '-1000'; // Đưa ra sau cùng
+      
+      // Đợi DOM cập nhật và render
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-      const imgData = await toPng(targetRef, {
-        cacheBust: true,
+      const canvas = await html2canvas(targetRef, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
         backgroundColor: '#09090b', // bg-zinc-950
-        pixelRatio: 2,
-        style: {
-          transform: 'scale(1)',
-          transformOrigin: 'top left'
-        }
+        logging: false
       });
+
+      // Trả element về chỗ cũ
+      targetRef.style.position = originalPosition;
+      targetRef.style.top = originalTop;
+      targetRef.style.left = originalLeft;
+      targetRef.style.zIndex = originalZIndex;
+
+      const imgData = canvas.toDataURL('image/png');
 
       let pdfWidth = 800;
       let pdfHeight = mode === 'single' ? 500 : targetRef.offsetHeight;
