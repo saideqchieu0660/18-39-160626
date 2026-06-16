@@ -45,9 +45,9 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       setShowExportMenu(false);
       
       const { jsPDF } = await import('jspdf');
-      const html2canvas = (await import('html2canvas')).default;
+      const { toPng } = await import('html-to-image');
       
-      // Temporarily bring the element to viewport but behind everything to ensure browser renders it
+      // Temporarily bring the element to viewport but behind everything to ensure browser renders it properly
       const originalTop = targetRef.style.top;
       const originalLeft = targetRef.style.left;
       const originalZIndex = targetRef.style.zIndex;
@@ -58,15 +58,20 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       targetRef.style.left = '0';
       targetRef.style.zIndex = '-1000'; // Đưa ra sau cùng
       
-      // Đợi DOM cập nhật và render
+      // Đợi DOM cập nhật và render (quan trọng để font được load)
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const canvas = await html2canvas(targetRef, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
+      // Warm up call để tải các font chữ vào cache ẩn của trình duyệt nếu là mobile
+      try { await toPng(targetRef, { cacheBust: false, pixelRatio: 1 }); } catch (e) {}
+
+      const imgData = await toPng(targetRef, {
+        cacheBust: false,
         backgroundColor: '#09090b', // bg-zinc-950
-        logging: false
+        pixelRatio: 2,
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left'
+        }
       });
 
       // Trả element về chỗ cũ
@@ -74,8 +79,6 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       targetRef.style.top = originalTop;
       targetRef.style.left = originalLeft;
       targetRef.style.zIndex = originalZIndex;
-
-      const imgData = canvas.toDataURL('image/png');
 
       let pdfWidth = 800;
       let pdfHeight = mode === 'single' ? 500 : targetRef.offsetHeight;
