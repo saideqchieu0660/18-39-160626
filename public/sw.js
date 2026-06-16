@@ -1,15 +1,17 @@
-const CACHE_NAME = 'henosis-v1';
+const CACHE_NAME = 'henosis-v2';
 const STATIC_ASSETS = [
   '/',
-  '/index.html'
+  '/index.html',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Caching App Shell...');
       return cache.addAll(STATIC_ASSETS);
-    }).catch(err => console.error("Cache install error:", err))
+    }).catch(err => console.error("[SW] Cache install error:", err))
   );
 });
 
@@ -20,6 +22,7 @@ self.addEventListener('activate', (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME) {
+              console.log('[SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -37,18 +40,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Stale-While-Revalidate pattern for HTML/JS/CSS assets
+  // Handle SPA routing & navigation requests: Returns index.html if offline
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/index.html');
+      })
+    );
+    return;
+  }
+
+  // Stale-While-Revalidate pattern for HTML/JS/CSS/Image assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+        if (networkResponse && networkResponse.status === 200 && (networkResponse.type === 'basic' || networkResponse.type === 'cors')) {
+           const responseToCache = networkResponse.clone();
            caches.open(CACHE_NAME).then((cache) => {
-             cache.put(event.request, networkResponse.clone());
+             cache.put(event.request, responseToCache);
            });
         }
         return networkResponse;
-      }).catch(() => {
-        // Fail silently in offline mode
+      }).catch((error) => {
+        console.warn(`[SW] Network fetch failed, relying on cache for: ${event.request.url}`, error);
       });
 
       return cachedResponse || fetchPromise;
