@@ -47,23 +47,18 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       const { jsPDF } = await import('jspdf');
       const { toPng } = await import('html-to-image');
       
-      // Temporarily unhide the container
-      targetRef.style.display = 'flex';
-
-      // Small delay to ensure the DOM is rendered if unhidden
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Đợi font loading (nếu có)
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       const imgData = await toPng(targetRef, {
         cacheBust: true,
-        backgroundColor: '#000000',
+        backgroundColor: '#09090b', // bg-zinc-950
         pixelRatio: 2,
         style: {
           transform: 'scale(1)',
           transformOrigin: 'top left'
         }
       });
-
-      targetRef.style.display = 'none';
 
       let pdfWidth = 800;
       let pdfHeight = mode === 'single' ? 500 : targetRef.offsetHeight;
@@ -86,9 +81,6 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       }
     } finally {
       setIsExporting(false);
-      if (targetRef) {
-         targetRef.style.display = 'none';
-      }
     }
   };
 
@@ -98,8 +90,8 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       {/* KHUNG ẨN CHỨA TOÀN BỘ DANH SÁCH (Dành cho Export "Tất Cả") */}
       <div 
         ref={exportAllRef} 
-        className="fixed top-0 left-0 bg-zinc-950 border border-zinc-800"
-        style={{ width: '800px', display: 'none', flexDirection: 'column', padding: '40px', zIndex: -100 }}
+        className="fixed bg-zinc-950 border border-zinc-800"
+        style={{ width: '800px', position: 'fixed', top: '-10000px', left: '-10000px', display: 'flex', flexDirection: 'column', padding: '40px', zIndex: -100 }}
       >
         <div className="flex items-center justify-center mb-8 text-center pb-8 border-b border-zinc-800 border-dashed">
           <div className="flex flex-col items-center">
@@ -150,8 +142,8 @@ export const AchievementCard = ({ points, streak, unlockedBadges, onClose }: Ach
       {/* KHUNG ẨN CHỨA SINGLE LAYOUT ĐỂ XUẤT PDF CỐ ĐỊNH = 800px */}
       <div
         ref={captureRef}
-        className="fixed top-0 left-0 bg-zinc-950 border border-zinc-800 flex-row overflow-hidden"
-        style={{ width: '800px', height: '500px', display: 'none', zIndex: -100 }}
+        className="fixed bg-zinc-950 border border-zinc-800 flex-row overflow-hidden"
+        style={{ width: '800px', height: '500px', position: 'fixed', top: '-10000px', left: '-10000px', display: 'flex', zIndex: -100 }}
       >
           {/* Cột trái: Tổng quan User */}
           <div className="w-1/3 p-8 border-r border-zinc-900 bg-gradient-to-br from-zinc-950 to-black flex flex-col items-center justify-center relative">
